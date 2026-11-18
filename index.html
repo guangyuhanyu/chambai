@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chấm bài viết HSK 4–9 · Gemini · Guangyu Hanyu</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,500;0,600;0,700;1,500&family=Be+Vietnam+Pro:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ink:#3d4440;--muted:#8d918b;--line:#e4ddd1;--paper:#fbf8f3;--card:#fffdf9;--soft:#f5f0e8;
+  --sage:#8ea888;--sage-d:#5f7d59;--sage-l:#e6eee2;--lav:#a79bc8;--lav-d:#6f62a0;--lav-l:#eeebf6;
+  --sand:#c8a679;--sand-d:#9a7647;--sand-l:#f4ecdf;--rose:#d39a98;--rose-d:#b0605d;--rose-l:#f8e7e5;
+  --gold:#c29a55;--gold-l:#f6eedc;--teal:#7fa3a6;--teal-d:#4f7a7d;--teal-l:#e2eeee;
+  --zh:'PingFang SC','Hiragino Sans GB','Noto Sans SC','Microsoft YaHei',sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:#efe9df}
+body{font-family:'Be Vietnam Pro',var(--zh);color:var(--ink);padding:18px;min-height:100vh}
+.zh{font-family:var(--zh)}
+.page{max-width:1240px;margin:0 auto;background:var(--paper);border-radius:20px;position:relative;overflow:hidden;padding:30px 30px 26px;box-shadow:0 14px 50px -24px rgba(90,80,60,.35)}
+.frame{position:absolute;inset:12px;border:1px solid #d9d0c2;border-radius:13px;pointer-events:none}
+.frame::after{content:"";position:absolute;inset:4px;border:1px dashed #e6dfd3;border-radius:10px}
+.star{position:absolute;color:var(--gold);font-size:12px;line-height:1;pointer-events:none}
+.wash{position:absolute;pointer-events:none;filter:blur(16px);opacity:.5;border-radius:58% 42% 55% 45%/50% 60% 40% 50%}
+.w1{width:260px;height:200px;left:-70px;top:-60px;background:radial-gradient(circle at 60% 60%,#b9cdb2,transparent 70%)}
+.w2{width:300px;height:240px;right:-90px;bottom:-80px;background:radial-gradient(circle at 40% 40%,#efc4c0,transparent 70%)}
+.w3{width:220px;height:160px;right:120px;top:-70px;background:radial-gradient(circle at 50% 60%,#d6cdea,transparent 70%);opacity:.4}
+.sprig{position:absolute;pointer-events:none}
+.sprig.tl{left:16px;top:18px;width:70px}
+.in{position:relative;z-index:1}
+
+header{text-align:center;margin-bottom:22px;padding:0 70px}
+.tag{font-family:'Lora',serif;font-style:italic;font-size:13px;color:var(--gold)}
+h1{font-family:'Lora',serif;font-weight:600;font-size:30px;margin:4px 0 4px}
+.sub{font-size:13.5px;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px;align-items:start}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.card h3{font-family:'Lora',serif;font-weight:600;font-size:16px;margin:0 0 12px;display:flex;align-items:center;gap:8px}
+.card h3 .n{width:22px;height:22px;border-radius:50%;background:var(--sage-l);color:var(--sage-d);font-family:'Be Vietnam Pro';font-size:12px;display:grid;place-items:center}
+
+label.l{display:block;font-size:12.5px;color:var(--muted);margin:12px 0 6px;font-weight:500}
+.lv{display:flex;gap:6px;flex-wrap:wrap}
+.lv button{flex:1;min-width:46px;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 4px;font-family:'Lora',serif;font-weight:600;font-size:15px;color:var(--muted);cursor:pointer;transition:.15s}
+.lv button small{display:block;font-family:'Be Vietnam Pro';font-weight:400;font-size:10px}
+.lv button.on{background:var(--sage-l);border-color:var(--sage);color:var(--sage-d)}
+select,textarea,input[type=text]{width:100%;font-family:'Be Vietnam Pro',var(--zh);font-size:14px;color:var(--ink);border:1px solid var(--line);background:#fff;border-radius:12px;padding:10px 12px;outline:none;transition:.15s}
+select:focus,textarea:focus,input:focus{border-color:var(--sage);box-shadow:0 0 0 3px var(--sage-l)}
+textarea{resize:vertical;line-height:1.75}
+#essay{min-height:230px;font-family:var(--zh);font-size:16px}
+.cnt{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:6px}
+.cnt b{color:var(--ink);font-weight:600}
+.cnt .ok{color:var(--sage-d)}.cnt .warn{color:var(--rose-d)}
+.hint{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5}
+.drop{display:flex;align-items:center;gap:10px;border:1.5px dashed var(--line);border-radius:12px;padding:10px 12px;cursor:pointer;font-size:13px;color:var(--muted);transition:.15s}
+.drop:hover{border-color:var(--sage);background:var(--sage-l)}
+.drop img{width:44px;height:44px;object-fit:cover;border-radius:8px}
+.drop .x{margin-left:auto;border:none;background:none;color:var(--rose-d);font-size:18px;cursor:pointer}
+.row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
+.btn{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:99px;padding:9px 16px;cursor:pointer;font-family:inherit;font-size:13.5px;transition:.15s;white-space:nowrap}
+.btn:hover{background:var(--soft)}
+.btn.main{flex:1;background:linear-gradient(135deg,#8ea888,#6f8f69);color:#fff;border:none;font-weight:600;font-size:15px;padding:12px 18px;box-shadow:0 8px 20px -10px rgba(95,125,89,.8)}
+.btn.main:hover{filter:brightness(1.05)}
+.btn.main:disabled{opacity:.6;cursor:wait}
+.btn.sm{padding:6px 12px;font-size:12.5px}
+
+/* kết quả */
+.empty{text-align:center;padding:50px 20px;color:var(--muted)}
+.empty .big{font-family:'Lora',serif;font-style:italic;font-size:18px;color:var(--ink);margin:14px 0 6px}
+.empty ul{text-align:left;display:inline-block;font-size:13px;line-height:1.9;margin:10px 0 0;padding-left:18px}
+.loading{text-align:center;padding:60px 20px;color:var(--muted)}
+.spin{width:46px;height:46px;border-radius:50%;border:3px solid var(--sage-l);border-top-color:var(--sage);animation:sp 1s linear infinite;margin:0 auto 16px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.err-box{background:var(--rose-l);color:var(--rose-d);border-radius:12px;padding:14px;font-size:13.5px}
+
+.top{display:grid;grid-template-columns:auto 1fr;gap:18px;align-items:center}
+.ring{position:relative;width:118px;height:118px}
+.ring svg{transform:rotate(-90deg)}
+.ring .v{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .v b{font-family:'Lora',serif;font-size:32px;font-weight:600;line-height:1}
+.ring .v span{font-size:11px;color:var(--muted)}
+.lvtag{display:inline-block;background:var(--gold-l);color:#93702f;border-radius:99px;padding:4px 12px;font-size:12.5px;font-weight:600;margin-bottom:8px}
+.summary{font-size:14px;line-height:1.65}
+.strengths{margin:10px 0 0;padding:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.strengths li{font-size:13px;color:var(--sage-d)}
+.strengths li::before{content:"✦ ";color:var(--gold)}
+.crit{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:16px}
+.cr{background:var(--soft);border-radius:12px;padding:10px 12px}
+.cr .h{display:flex;justify-content:space-between;font-size:12.5px;font-weight:500}
+.cr .h b{font-family:'Lora',serif}
+.cr .bar{height:5px;background:#e8e1d5;border-radius:99px;margin:6px 0;overflow:hidden}
+.cr .bar i{display:block;height:100%;border-radius:99px}
+.cr p{margin:0;font-size:11.5px;color:var(--muted);line-height:1.45}
+
+.rtabs{display:flex;gap:4px;background:var(--soft);border-radius:99px;padding:4px;margin:20px 0 14px;overflow-x:auto}
+.rtabs button{flex:1;border:none;background:none;font-family:inherit;font-size:13px;padding:8px 12px;border-radius:99px;color:var(--muted);cursor:pointer;white-space:nowrap}
+.rtabs button.on{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 2px 8px -3px rgba(90,80,60,.3)}
+.rtabs button i{font-style:normal;background:var(--rose-l);color:var(--rose-d);border-radius:99px;padding:0 7px;font-size:11px;margin-left:4px}
+
+.marked{font-family:var(--zh);font-size:17px;line-height:2.25;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;white-space:pre-wrap;word-break:break-all}
+mark{background:var(--ml);border-bottom:2px solid var(--mc);border-radius:3px;padding:1px 1px;cursor:pointer;color:inherit}
+mark sup{font-family:'Be Vietnam Pro';font-size:9.5px;font-weight:600;color:#fff;background:var(--mc);border-radius:99px;padding:0 4px;margin-left:1px;vertical-align:super}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:11.5px;color:var(--muted);margin:10px 2px 14px}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:9px;height:9px;border-radius:50%}
+.elist{display:flex;flex-direction:column;gap:10px}
+.ec{border:1px solid var(--line);border-left:4px solid var(--mc);border-radius:12px;padding:12px 14px;background:#fff;transition:.3s}
+.ec.flash{box-shadow:0 0 0 3px var(--ml)}
+.ec .h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.ec .num{width:22px;height:22px;border-radius:50%;background:var(--mc);color:#fff;font-size:11.5px;font-weight:600;display:grid;place-items:center;flex:none}
+.chip{font-size:11px;font-weight:600;background:var(--ml);color:var(--mc);border-radius:99px;padding:2px 9px}
+.fix{font-family:var(--zh);font-size:16px;margin:8px 0 6px;line-height:1.7}
+.fix s{color:var(--rose-d);text-decoration-thickness:1.5px}
+.fix .arrow{color:var(--muted);margin:0 8px;font-family:'Be Vietnam Pro'}
+.fix ins{text-decoration:none;color:var(--sage-d);font-weight:600;background:var(--sage-l);border-radius:4px;padding:0 4px}
+.ec p{margin:4px 0 0;font-size:13px;line-height:1.6}
+.ec p b{font-weight:600}
+.ec .ex{background:var(--soft);border-radius:8px;padding:7px 10px;margin-top:8px;font-size:13px}
+.ec .ex .zh{font-size:15px}
+.none{text-align:center;padding:24px;color:var(--sage-d);font-family:'Lora',serif;font-style:italic}
+
+.textbox{font-family:var(--zh);font-size:17px;line-height:2.1;background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;white-space:pre-wrap}
+.sec-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;gap:8px}
+.sec-h h4{margin:0;font-family:'Lora',serif;font-size:15px;font-weight:600}
+.blist{display:flex;flex-direction:column;gap:10px}
+.bc{border:1px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;border-left:4px solid var(--lav)}
+.bc .pair{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center}
+.bc .o{font-family:var(--zh);font-size:15px;color:var(--muted)}
+.bc .b{font-family:var(--zh);font-size:16px;color:var(--lav-d);font-weight:600}
+.bc .py{font-size:12px;color:var(--lav-d);opacity:.8;margin-top:2px}
+.bc p{margin:8px 0 0;font-size:13px;line-height:1.6}
+.vocab{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:14px}
+.vw{background:var(--gold-l);border-radius:10px;padding:8px 10px}
+.vw .zh{font-size:17px;font-weight:600}
+.vw .py{font-size:12px;color:#93702f}
+.vw .m{font-size:12px;color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:9px 18px;border-radius:99px;font-size:13px;opacity:0;transition:.25s;pointer-events:none;z-index:9}
+.toast.show{opacity:1;transform:translateX(-50%)}
+.copyfb{width:100%;min-height:120px;margin-top:8px;font-size:12px}
+details.cfg{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:0 14px;margin-bottom:14px}
+details.cfg summary{cursor:pointer;padding:11px 0;font-size:13.5px;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+details.cfg summary::-webkit-details-marker{display:none}
+details.cfg summary .st{margin-left:auto;font-size:11.5px;font-weight:500;border-radius:99px;padding:2px 10px}
+.st.ok{background:var(--sage-l);color:var(--sage-d)}.st.no{background:var(--rose-l);color:var(--rose-d)}
+details.cfg .body{padding-bottom:14px}
+.modes{display:flex;gap:6px}
+.modes label{flex:1;border:1px solid var(--line);background:var(--card);border-radius:10px;padding:8px 10px;font-size:12.5px;cursor:pointer;line-height:1.35}
+.modes label small{display:block;color:var(--muted);font-size:11px}
+.modes input{display:none}
+.modes label.on{border-color:var(--sage);background:var(--sage-l)}
+.gmode{display:flex;gap:6px;margin-top:16px}
+.gmode button{flex:1;text-align:left;border:1px solid var(--line);background:var(--card);border-radius:12px;padding:8px 11px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;color:var(--ink);line-height:1.35}
+.gmode button small{display:block;font-weight:400;font-size:11px;color:var(--muted)}
+.gmode button.on{border-color:var(--sage);background:var(--sage-l)}
+.usage{font-size:11.5px;color:var(--muted);text-align:right;margin-top:10px}
+footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:20px}
+@media(max-width:900px){.grid{grid-template-columns:minmax(0,1fr)}}
+.grid>*{min-width:0}select{text-overflow:ellipsis}
+@media(max-width:560px){
+  body{padding:8px}.page{padding:26px 16px 20px}header{padding:0 26px}h1{font-size:23px}
+  .sprig.tl{width:40px;opacity:.7}.lv{display:grid;grid-template-columns:repeat(3,1fr)}.crit{grid-template-columns:1fr 1fr}.top{grid-template-columns:1fr;justify-items:center;text-align:center}
+  .bc .pair{grid-template-columns:1fr}.bc .pair .arrow{display:none}
+}
+</style>
+</head>
+<body>
+<div class="page">
+  <div class="wash w1"></div><div class="wash w2"></div><div class="wash w3"></div>
+  <div class="frame"></div>
+  <span class="star" style="left:9px;top:9px">✦</span><span class="star" style="right:9px;top:9px">✦</span>
+  <span class="star" style="left:9px;bottom:9px">✦</span><span class="star" style="right:9px;bottom:9px">✦</span>
+  <svg class="sprig tl" viewBox="0 0 90 150" fill="none">
+    <path d="M14 148 C22 110 18 76 44 40 C54 26 62 16 74 6" stroke="#7d9677" stroke-width="1.2" stroke-linecap="round"/>
+    <g fill="#8ea888">
+      <ellipse cx="10" cy="128" rx="9" ry="3.6" transform="rotate(-62 10 128)"/><ellipse cx="27" cy="120" rx="9" ry="3.6" transform="rotate(-118 27 120)" opacity=".8"/>
+      <ellipse cx="12" cy="100" rx="9" ry="3.6" transform="rotate(-55 12 100)" opacity=".9"/><ellipse cx="30" cy="92" rx="9" ry="3.6" transform="rotate(-125 30 92)"/>
+      <ellipse cx="22" cy="72" rx="8.5" ry="3.4" transform="rotate(-48 22 72)" opacity=".8"/><ellipse cx="42" cy="66" rx="8.5" ry="3.4" transform="rotate(-128 42 66)"/>
+      <ellipse cx="38" cy="44" rx="8" ry="3.2" transform="rotate(-40 38 44)"/><ellipse cx="56" cy="40" rx="8" ry="3.2" transform="rotate(-135 56 40)" opacity=".85"/>
+      <ellipse cx="56" cy="20" rx="7" ry="3" transform="rotate(-30 56 20)" opacity=".8"/><ellipse cx="70" cy="18" rx="7" ry="3" transform="rotate(-140 70 18)"/>
+    </g>
+  </svg>
+
+  <div class="in">
+    <header>
+      <div class="tag">Tiếng Trung cùng Guangyu Laoshi</div>
+      <h1>Chấm &amp; sửa bài viết HSK 4–9</h1>
+      <div class="sub">Chỉ rõ lỗi · Hướng dẫn cách sửa · Gợi ý diễn đạt hay hơn</div>
+    </header>
+
+    <div class="grid">
+      <!-- NHẬP BÀI -->
+      <section class="card">
+        <details class="cfg" id="cfg">
+          <summary>⚙ Kết nối Gemini (miễn phí) <span class="st no" id="cfgSt">Chưa kết nối</span></summary>
+          <div class="body">
+            <label class="l" for="apiKey">Gemini API key</label>
+            <input type="text" id="apiKey" placeholder="AIza…" autocomplete="off" style="-webkit-text-security:disc">
+            <div class="hint">Lấy miễn phí tại aistudio.google.com → Get API key, chỉ cần tài khoản Google. Khóa chỉ lưu trong trình duyệt này.</div>
+            <label class="l" for="model">Mô hình</label>
+            <select id="model">
+              <option value="gemini-flash-latest">Gemini Flash · chấm tốt (khuyên dùng)</option>
+              <option value="gemini-flash-lite-latest">Gemini Flash-Lite · nhanh, nhiều lượt hơn</option>
+              <option value="gemini-2.5-flash">Gemini 2.5 Flash · dự phòng</option>
+            </select>
+            <div class="row" style="margin-top:12px"><button class="btn sm" id="cfgSave">Lưu cài đặt</button></div>
+          </div>
+        </details>
+        <h3><span class="n">1</span>Bài làm</h3>
+        <label class="l">Cấp độ</label>
+        <div class="lv" id="lv"></div>
+        <label class="l" for="task">Dạng bài</label>
+        <select id="task"></select>
+        <div class="hint" id="taskHint"></div>
+
+        <div id="wordsWrap">
+          <label class="l" for="words">Từ cho sẵn <span style="font-weight:400">(cách nhau bằng dấu phẩy hoặc dấu cách)</span></label>
+          <input type="text" id="words" class="zh" placeholder="VD: 热情、帮助、感动、友谊、永远">
+        </div>
+        <div id="sourceWrap">
+          <label class="l" for="source" id="sourceLabel">Đoạn văn gốc</label>
+          <textarea id="source" rows="4"></textarea>
+        </div>
+        <label class="l" for="prompt">Đề bài <span style="font-weight:400">(không bắt buộc)</span></label>
+        <textarea id="prompt" rows="2" class="zh" placeholder="Dán đề bài vào đây để chấm sát yêu cầu hơn"></textarea>
+
+        <label class="l" for="essay">Bài viết của học viên</label>
+        <textarea id="essay" placeholder="Dán hoặc gõ bài viết tiếng Trung vào đây…"></textarea>
+        <div class="cnt"><span>Số chữ Hán: <b id="cc">0</b> <span id="target"></span></span><span id="ccNote"></span></div>
+
+        <div id="imgWrap" style="display:none">
+          <label class="l">Ảnh bài viết tay hoặc tranh / biểu đồ của đề <span style="font-weight:400">(không bắt buộc)</span></label>
+          <div class="drop" id="drop"><span>📷</span><span id="dropTxt">Bấm để chọn ảnh</span></div>
+          <input type="file" id="file" accept="image/*" multiple style="display:none">
+        </div>
+
+        <div class="gmode" id="gmode">
+          <button data-g="quick">⚡ Chấm nhanh<small>Điểm, lỗi, cách sửa và bản sửa · tốn ít lượt</small></button>
+          <button data-g="full">✦ Chấm đầy đủ<small>Thêm diễn đạt hay hơn, bản nâng cấp, từ nên học</small></button>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn main" id="go">✦ Chấm bài</button>
+        </div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn sm" id="demo">Thử với bài mẫu</button>
+          <button class="btn sm" id="clear">Xóa hết</button>
+        </div>
+      </section>
+
+      <!-- KẾT QUẢ -->
+      <section class="card" id="out">
+        <div class="empty">
+          <svg width="90" height="70" viewBox="0 0 80 120" fill="none" style="opacity:.9">
+            <path d="M40 118 C40 90 40 64 40 36" stroke="#7d9677" stroke-width="1.3"/>
+            <g fill="#8ea888"><ellipse cx="31" cy="96" rx="9" ry="3.4" transform="rotate(-30 31 96)"/><ellipse cx="49" cy="80" rx="9" ry="3.4" transform="rotate(30 49 80)"/><ellipse cx="32" cy="64" rx="8" ry="3" transform="rotate(-30 32 64)"/></g>
+            <g transform="translate(40 30)" fill="#e2a9a5"><circle cx="0" cy="-8" r="6.5"/><circle cx="7.6" cy="-2.5" r="6.5"/><circle cx="4.7" cy="6.5" r="6.5"/><circle cx="-4.7" cy="6.5" r="6.5"/><circle cx="-7.6" cy="-2.5" r="6.5"/><circle r="3.4" fill="#c99a55"/></g>
+          </svg>
+          <div class="big">Kết quả chấm sẽ hiện ở đây</div>
+          <div style="font-size:13px">Chọn cấp độ, dạng bài, dán bài viết rồi bấm “Chấm bài”.</div>
+          <ul>
+            <li>Điểm theo 5 tiêu chí và mức HSK ước tính</li>
+            <li>Đánh dấu từng lỗi ngay trong bài, giải thích và cách sửa</li>
+            <li>Bản sửa hoàn chỉnh và bản nâng cấp</li>
+            <li>Gợi ý diễn đạt hay hơn và từ nên học thêm</li>
+          </ul>
+        </div>
+      </section>
+    </div>
+    <footer>Guangyu Hanyu · 光余汉语 · Kết quả do AI chấm, nên xem lại trước khi gửi học viên.</footer>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+var $=function(id){return document.getElementById(id)};
+var LEVELS=[['4','Trung cấp'],['5','Trung cấp'],['6','Trung cấp'],['7','Cao cấp'],['8','Cao cấp'],['9','Cao cấp']];
+var ALL=['4','5','6','7','8','9'];
+var TASKS=[
+ {id:'h4a',lv:['4'],name:'完成句子 · Sắp xếp từ thành câu',len:0,hint:'Mỗi câu một dòng. Có thể dán các từ của đề vào ô Đề bài.'},
+ {id:'h4b',lv:['4'],name:'看图用词造句 · Nhìn tranh, dùng từ đặt câu',len:0,words:true,img:true,hint:'Mỗi câu một dòng, ghi từ cần dùng vào ô Từ cho sẵn.'},
+ {id:'h5a',lv:['5'],name:'用词写短文 · Dùng từ cho sẵn viết đoạn văn',len:80,words:true,hint:'Khoảng 80 chữ, dùng đủ các từ cho sẵn.'},
+ {id:'h5b',lv:['5'],name:'看图写短文 · Nhìn tranh viết đoạn văn',len:80,img:true,hint:'Khoảng 80 chữ. Có thể đính kèm ảnh tranh của đề.'},
+ {id:'h6a',lv:['6'],name:'缩写 · Tóm tắt bài đọc',len:400,source:'Bài đọc gốc (không bắt buộc)',hint:'Khoảng 400 chữ, có tiêu đề, giữ đúng nội dung chính.'},
+ {id:'h7a',lv:['7','8','9'],name:'图表作文 · Mô tả biểu đồ',len:200,img:true,hint:'Khoảng 200 chữ. Đính kèm ảnh biểu đồ để chấm chính xác số liệu.'},
+ {id:'h7b',lv:['7','8','9'],name:'议论文 · Văn nghị luận',len:600,hint:'Khoảng 600 chữ, có luận điểm, luận cứ, kết luận rõ ràng.'},
+ {id:'h7c',lv:['7','8','9'],name:'翻译 · Dịch đoạn văn sang tiếng Trung',len:0,source:'Đoạn văn gốc cần dịch',hint:'Dán đoạn văn gốc (tiếng Việt hoặc tiếng Anh) vào ô bên trên.'},
+ {id:'free',lv:ALL,name:'Viết tự do · Bài viết bất kỳ',len:0,img:true,hint:'Chấm theo chuẩn của cấp độ đã chọn.'}
+];
+var ETYPES={
+ 'Ngữ pháp':['#b0605d','#f8e7e5'],
+ 'Từ vựng':['#6f62a0','#eeebf6'],
+ 'Kết hợp từ':['#4f7a7d','#e2eeee'],
+ 'Trật tự từ':['#93702f','#f6eedc'],
+ 'Chữ Hán':['#9a7647','#f4ecdf'],
+ 'Dấu câu':['#5f7d59','#e6eee2'],
+ 'Nội dung':['#7a6f68','#efebe6']
+};
+function tcol(t){return ETYPES[t]||ETYPES['Nội dung']}
+
+var gmode='quick', level='5', images=[], imgOK=true, last=null, busy=false;
+
+// ---------- form ----------
+$('lv').innerHTML=LEVELS.map(function(l){return '<button data-l="'+l[0]+'">HSK '+l[0]+'<small>'+l[1]+'</small></button>'}).join('');
+$('lv').onclick=function(e){var b=e.target.closest('button');if(!b)return;level=b.dataset.l;syncLevel()};
+function syncLevel(){
+  [].forEach.call($('lv').children,function(b){b.classList.toggle('on',b.dataset.l===level)});
+  var cur=$('task').value, opts=TASKS.filter(function(t){return t.lv.indexOf(level)>=0});
+  $('task').innerHTML=opts.map(function(t){return '<option value="'+t.id+'">'+t.name+'</option>'}).join('');
+  if(opts.some(function(t){return t.id===cur}))$('task').value=cur;
+  syncTask(); store();
+}
+function task(){var id=$('task').value;return TASKS.filter(function(t){return t.id===id})[0]||TASKS[TASKS.length-1]}
+function drawMode(){[].forEach.call($('gmode').children,function(b){b.classList.toggle('on',b.dataset.g===gmode)})}
+$('gmode').onclick=function(e){var b=e.target.closest('button');if(!b)return;gmode=b.dataset.g;drawMode();store()};
+function syncTask(){
+  var t=task();
+  $('taskHint').textContent=t.hint;
+  $('wordsWrap').style.display=t.words?'':'none';
+  $('sourceWrap').style.display=t.source?'':'none';
+  if(t.source)$('sourceLabel').textContent=t.source;
+  $('imgWrap').style.display=(imgOK)?'':'none';
+  count(); store();
+}
+$('task').onchange=syncTask;
+function hanzi(s){return (s.match(/[㐀-鿿]/g)||[]).length}
+function count(){
+  var n=hanzi($('essay').value), t=task();
+  $('cc').textContent=n;
+  $('target').textContent=t.len?'/ yêu cầu ≈ '+t.len:'';
+  var note='';
+  if(t.len&&n){var r=n/t.len; note=r<0.75?'<span class="warn">Bài còn ngắn</span>':(r>1.35?'<span class="warn">Bài hơi dài</span>':'<span class="ok">Độ dài phù hợp</span>')}
+  $('ccNote').innerHTML=note;
+}
+['essay','prompt','words','source'].forEach(function(id){$(id).addEventListener('input',function(){if(id==='essay')count();store()})});
+
+// ảnh
+$('drop').onclick=function(e){if(e.target.classList.contains('x')){images=[];drawDrop();return}$('file').click()};
+$('file').onchange=function(){images=[].slice.call($('file').files,0,3);drawDrop();$('file').value=''};
+function drawDrop(){
+  if(!images.length){$('drop').innerHTML='<span>📷</span><span>Bấm để chọn ảnh (tối đa 3)</span>';return}
+  $('drop').innerHTML=images.map(function(f){return '<img src="'+URL.createObjectURL(f)+'">'}).join('')+'<span>'+images.length+' ảnh</span><button class="x" title="Bỏ ảnh">×</button>';
+}
+
+// lưu nháp
+function store(){try{localStorage.setItem('gy-cham-draft',JSON.stringify({gmode:gmode,level:level,task:$('task').value,essay:$('essay').value,prompt:$('prompt').value,words:$('words').value,source:$('source').value}))}catch(e){}}
+function restore(){try{var d=JSON.parse(localStorage.getItem('gy-cham-draft'));if(!d)return;gmode=d.gmode||gmode;level=d.level||level;syncLevel();$('task').value=d.task||$('task').value;['essay','prompt','words','source'].forEach(function(k){$(k).value=d[k]||''})}catch(e){}}
+
+$('demo').onclick=function(){
+  level='5';syncLevel();$('task').value='h5a';syncTask();
+  $('words').value='热情、帮助、感动、友谊、永远';
+  $('prompt').value='请结合下列词语（要全部使用，顺序不分先后），写一篇80字左右的短文。';
+  $('essay').value='我的好朋友是小明，他很热情，常常帮助我。去年我刚来北京时候，什么都不知道，他带我去很多地方。虽然他工作很忙，所以他总是有时间陪我。有一次我生病了，他买药给我，还陪我在医院一整天，我非常感动他。我们的友谊越来越深了，我希望我们永远是好朋友。';
+  count();store();
+};
+$('clear').onclick=function(){['essay','prompt','words','source'].forEach(function(k){$(k).value=''});images=[];drawDrop();count();store()};
+
+// ---------- gọi Claude ----------
+function buildPrompt(){
+  var t=task(), essay=$('essay').value.trim(), Q=gmode==='quick';
+  var lines=[
+'Bạn là giám khảo chấm phần VIẾT (书写/写作) của kỳ thi HSK theo khung HSK 3.0, đồng thời là giáo viên tiếng Trung giàu kinh nghiệm dạy người Việt.',
+'Hãy chấm bài của học viên người Việt dưới đây thật chính xác và chỉ ra lỗi cụ thể.',
+'',
+'THÔNG TIN BÀI',
+'- Cấp độ mục tiêu: HSK '+level+(level>='7'?' (bài thi HSK 7–9, chấm theo chuẩn của cấp '+level+')':''),
+'- Dạng bài: '+t.name+(t.len?' — yêu cầu khoảng '+t.len+' chữ':''),
+'- Số chữ Hán học viên viết: '+hanzi(essay)
+  ];
+  if($('prompt').value.trim())lines.push('- Đề bài: '+$('prompt').value.trim());
+  if(t.words&&$('words').value.trim())lines.push('- Từ bắt buộc phải dùng: '+$('words').value.trim()+' (kiểm tra xem đã dùng đủ và dùng đúng chưa)');
+  if(t.source&&$('source').value.trim())lines.push('- '+(t.id==='h7c'?'Đoạn văn gốc cần dịch':'Bài đọc gốc')+': """'+$('source').value.trim()+'"""');
+  if(images.length)lines.push('- Có kèm ảnh: có thể là bài viết tay của học viên, hoặc tranh/biểu đồ của đề. Nếu là bài viết tay, hãy chép chính xác (giữ nguyên cả lỗi) vào trường "transcript" và chấm trên văn bản đó.');
+  lines.push('','BÀI LÀM CỦA HỌC VIÊN','"""',essay||'(xem ảnh đính kèm)','"""','',
+'YÊU CẦU CHẤM',
+'1. Chấm theo 5 tiêu chí, mỗi tiêu chí tối đa 20 điểm: "Nội dung & đáp ứng đề", "Từ vựng", "Ngữ pháp", "Mạch lạc & bố cục", "Chữ Hán & dấu câu". Tổng 100 điểm. Chấm đúng mức độ của cấp HSK '+level+', không khắt khe theo chuẩn người bản ngữ, nhưng cũng không nương tay.',
+'2. Liệt kê TẤT CẢ lỗi sai thật sự (tối đa '+(Q?10:15)+' lỗi quan trọng nhất). Với mỗi lỗi:',
+'   - "original": đoạn sai, PHẢI chép NGUYÊN VĂN, đúng từng ký tự từ bài làm, càng ngắn càng tốt nhưng đủ để thấy lỗi (thường 2–12 ký tự).',
+'   - "corrected": cách viết đúng thay cho đoạn đó.',
+'   - "type": đúng một trong các giá trị: "Ngữ pháp", "Từ vựng", "Kết hợp từ", "Trật tự từ", "Chữ Hán", "Dấu câu", "Nội dung".',
+(Q?'   - "explain": 1 câu tiếng Việt thật ngắn nói vì sao sai.':'   - "explain": giải thích bằng tiếng Việt vì sao sai, ngắn gọn 1–2 câu. Nếu là lỗi điển hình do ảnh hưởng tiếng Việt thì nói rõ.'),
+(Q?'   - "how_to_fix": 1 câu ngắn nêu quy tắc hoặc công thức cần nhớ.':'   - "how_to_fix": hướng dẫn cách sửa / quy tắc cần nhớ để lần sau không sai, bằng tiếng Việt, kèm công thức ngữ pháp nếu có (VD: 让 + người + cảm thấy...).'),
+(Q?'   - "example": để chuỗi rỗng.':'   - "example": 1 câu ví dụ đúng bằng tiếng Trung khác với câu trong bài, kèm nghĩa tiếng Việt trong ngoặc.'),
+'   Không coi là lỗi những chỗ chỉ là cách diễn đạt chưa hay; những chỗ đó đưa vào "better_expressions".',
+'3. "corrected_text": toàn bộ bài đã sửa hết lỗi, giữ nguyên ý và văn phong của học viên, chỉ sửa chỗ sai.',
+(Q?'4. CHẾ ĐỘ CHẤM NHANH: "better_expressions", "vocab_to_learn" để mảng rỗng [], "upgraded_text" để chuỗi rỗng. Nhận xét tiêu chí mỗi cái tối đa 1 câu ngắn. "summary" 1–2 câu, "strengths" 1–2 ý. Viết càng gọn càng tốt.':
+'4. "better_expressions": 3–6 gợi ý diễn đạt hay hơn, tự nhiên hơn hoặc trang trọng hơn, phù hợp trình độ HSK '+level+' (có thể dùng thành ngữ, cấu trúc văn viết, từ nối). "original" là cụm trong bài (đã sửa lỗi), "better" là cách nói hay hơn, "pinyin" là pinyin có dấu thanh của "better", "why" giải thích bằng tiếng Việt vì sao hay hơn.'+
+'\n5. "upgraded_text": viết lại cả bài ở mức tốt của HSK '+level+(t.len?' (độ dài khoảng '+t.len+' chữ)':'')+', giữ ý chính của học viên, để học viên tham khảo.'+
+'\n6. "vocab_to_learn": 4–8 từ/cấu trúc đáng học thêm xuất hiện trong bản nâng cấp, gồm "word", "pinyin" (có dấu thanh), "meaning" (nghĩa tiếng Việt ngắn).'),
+'7. "summary": nhận xét chung 2–3 câu bằng tiếng Việt, gọi học viên là "bạn", giọng khích lệ nhưng thẳng thắn. "strengths": 2–3 điểm làm tốt. "level_estimate": một câu ngắn về mức đạt được, ví dụ "Đạt chuẩn HSK 5" hoặc "Gần đạt HSK 7".',
+'',
+'QUY ĐỊNH TRÌNH BÀY',
+'- Mọi văn bản tiếng Trung dùng chữ Hán giản thể và DẤU CÂU TOÀN CHIỀU RỘNG chuẩn tiếng Trung： ，。、；：？！“”（）《》 — tuyệt đối không dùng dấu nửa chiều rộng , . ; : ? ! trong câu tiếng Trung.',
+'- Không dùng markdown, không dùng ký tự ** trong bất kỳ trường nào.',
+'- CHỈ trả về một đối tượng JSON hợp lệ, không có chữ nào bên ngoài, đúng cấu trúc:',
+'{"transcript":"","score":{"total":0,"criteria":[{"name":"","score":0,"max":20,"comment":""}]},"level_estimate":"","summary":"","strengths":[""],"errors":[{"original":"","corrected":"","type":"","explain":"","how_to_fix":"","example":""}],"corrected_text":"","better_expressions":[{"original":"","better":"","pinyin":"","why":""}],"upgraded_text":"","vocab_to_learn":[{"word":"","pinyin":"","meaning":""}]}'
+  );
+  return lines.join('\n');
+}
+function parseJSON(txt){
+  var a=txt.indexOf('{'), b=txt.lastIndexOf('}');
+  if(a<0||b<a)throw new Error('no json');
+  return JSON.parse(txt.slice(a,b+1));
+}
+
+$('go').onclick=function(){
+  if(busy)return;
+  var essay=$('essay').value.trim();
+  if(!essay&&!images.length){toast('Thầy dán bài viết vào trước nhé');$('essay').focus();return}
+  if(!ready()){$('cfg').open=true;toast('Thầy dán Gemini API key trước nhé');return}
+  busy=true;$('go').disabled=true;$('go').textContent='Đang chấm…';
+  $('out').innerHTML='<div class="loading"><div class="spin"></div><div style="font-family:Lora,serif;font-size:16px;color:var(--ink)">Đang đọc và chấm bài…</div><div id="prog" style="font-size:12.5px;margin-top:6px">Bài dài có thể mất 30–60 giây</div></div>';
+  var snap={essay:essay,level:level,task:task(),quick:gmode==='quick'};
+  var t0=Date.now(),tick=setInterval(function(){var el=$('prog');if(el)el.textContent='Đã chờ '+Math.round((Date.now()-t0)/1000)+' giây… bài dài có thể mất 30–60 giây'},1000);
+  callClaude(buildPrompt(),images).then(function(r){clearInterval(tick);
+    var data;
+    try{data=parseJSON(r.text)}catch(e){throw {message:'Kết quả trả về chưa đúng định dạng'+(r.truncated?' (bị cắt ngắn do bài quá dài)':'')+'. Thầy bấm Chấm bài lại nhé.'}}
+    last={data:data,snap:snap,usage:r.usage};render();
+  }).catch(function(e){clearInterval(tick);
+    var msg=(e&&e.message)||'Có lỗi xảy ra, Thầy thử lại nhé.';
+    $('out').innerHTML='<div class="err-box">'+esc(msg)+'</div>';
+  }).then(function(){busy=false;$('go').disabled=false;$('go').textContent='✦ Chấm bài'});
+};
+
+// ---------- hiển thị ----------
+function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+var rtab='errors';
+function tabs(){var d=last.data,t=[['errors','Lỗi & cách sửa',(d.errors||[]).filter(function(e){return e&&e.original}).length],['fixed','Bản sửa']];
+  if((d.better_expressions||[]).length)t.push(['better','Diễn đạt hay hơn']);
+  if(d.upgraded_text)t.push(['up','Bản nâng cấp']);
+  if(!t.some(function(x){return x[0]===rtab}))rtab='errors';return t}
+function render(){
+  var d=last.data, s=d.score||{}, total=Math.max(0,Math.min(100,+s.total||0));
+  var col=total>=80?'#5f7d59':total>=60?'#c29a55':'#b0605d';
+  var C=2*Math.PI*50, errs=(d.errors||[]).filter(function(e){return e&&e.original});
+  var html='<div class="top"><div class="ring"><svg width="118" height="118"><circle cx="59" cy="59" r="50" stroke="#efe9df" stroke-width="9" fill="none"/><circle cx="59" cy="59" r="50" stroke="'+col+'" stroke-width="9" fill="none" stroke-linecap="round" stroke-dasharray="'+C+'" stroke-dashoffset="'+(C*(1-total/100))+'"/></svg><div class="v"><div><b style="color:'+col+'">'+total+'</b><br><span>/ 100 điểm</span></div></div></div>';
+  html+='<div>'+(d.level_estimate?'<div class="lvtag">'+esc(d.level_estimate)+'</div>':'')+'<div class="summary">'+esc(d.summary)+'</div>';
+  if(d.strengths&&d.strengths.length)html+='<ul class="strengths">'+d.strengths.map(function(x){return '<li>'+esc(x)+'</li>'}).join('')+'</ul>';
+  html+='</div></div>';
+  var cols=['#8ea888','#a79bc8','#d39a98','#c8a679','#7fa3a6'];
+  html+='<div class="crit">'+(s.criteria||[]).map(function(c,i){var mx=+c.max||20,v=+c.score||0;return '<div class="cr"><div class="h"><span>'+esc(c.name)+'</span><b>'+v+'/'+mx+'</b></div><div class="bar"><i style="width:'+(v/mx*100)+'%;background:'+cols[i%5]+'"></i></div><p>'+esc(c.comment)+'</p></div>'}).join('')+'</div>';
+  html+='<div class="rtabs">'+tabs().map(function(t){return '<button data-t="'+t[0]+'" class="'+(rtab===t[0]?'on':'')+'">'+t[1]+(t[2]!=null?'<i>'+t[2]+'</i>':'')+'</button>'}).join('')+'</div><div id="rbody"></div>';
+  html+='<div class="row" style="justify-content:flex-end"><button class="btn sm" id="cpAll">⧉ Sao chép nhận xét để gửi học viên</button></div><div id="cpBox"></div><div class="usage">'+(last.snap.quick?'⚡ Chấm nhanh':'✦ Chấm đầy đủ')+(last.usage?' · Đã dùng '+last.usage.input_tokens.toLocaleString('vi-VN')+' token vào + '+last.usage.output_tokens.toLocaleString('vi-VN')+' token ra':'')+'</div>';
+  $('out').innerHTML=html;
+  [].forEach.call($('out').querySelectorAll('.rtabs button'),function(b){b.onclick=function(){rtab=b.dataset.t;render()}});
+  $('cpAll').onclick=function(){copy(feedbackText())};
+  renderBody(errs);
+}
+function renderBody(errs){
+  var d=last.data, el=$('rbody'), base=(d.transcript&&d.transcript.trim())?d.transcript:last.snap.essay, h='';
+  if(rtab==='errors'){
+    var used={};errs.forEach(function(e){used[e.type]=1});
+    h+='<div class="marked">'+mark(base,errs)+'</div>';
+    h+='<div class="legend">'+Object.keys(used).map(function(t){return '<span><i style="background:'+tcol(t)[0]+'"></i>'+esc(t)+'</span>'}).join('')+'<span style="margin-left:auto">Bấm vào chỗ đánh dấu để xem lỗi</span></div>';
+    if(!errs.length)h+='<div class="none">✦ Không tìm thấy lỗi sai. Bạn viết rất tốt!</div>';
+    h+='<div class="elist">'+errs.map(function(e,i){var c=tcol(e.type);return '<div class="ec" id="e'+i+'" style="--mc:'+c[0]+';--ml:'+c[1]+'"><div class="h"><span class="num">'+(i+1)+'</span><span class="chip">'+esc(e.type)+'</span></div><div class="fix"><s>'+esc(e.original)+'</s><span class="arrow">→</span><ins>'+esc(e.corrected)+'</ins></div><p><b>Vì sao sai:</b> '+esc(e.explain)+'</p><p><b>Cách sửa:</b> '+esc(e.how_to_fix)+'</p>'+(e.example?'<div class="ex"><b>Ví dụ:</b> <span class="zh">'+esc(e.example)+'</span></div>':'')+'</div>'}).join('')+'</div>';
+  }else if(rtab==='fixed'){
+    h+='<div class="sec-h"><h4>Bài đã sửa lỗi</h4><button class="btn sm" data-cp="corrected_text">⧉ Sao chép</button></div><div class="textbox">'+esc(d.corrected_text)+'</div>';
+    h+='<div class="hint">Chữ Hán: '+hanzi(d.corrected_text||'')+' chữ. Bản này chỉ sửa chỗ sai, giữ nguyên ý và văn phong của học viên.</div>';
+  }else if(rtab==='better'){
+    var b=d.better_expressions||[];
+    h+='<div class="blist">'+(b.length?b.map(function(x){return '<div class="bc"><div class="pair"><div class="o">'+esc(x.original)+'</div><div class="arrow" style="color:var(--muted)">→</div><div><div class="b">'+esc(x.better)+'</div><div class="py">'+esc(x.pinyin)+'</div></div></div><p>'+esc(x.why)+'</p></div>'}).join(''):'<div class="none">Chưa có gợi ý.</div>')+'</div>';
+  }else{
+    h+='<div class="sec-h"><h4>Bài nâng cấp tham khảo · HSK '+esc(last.snap.level)+'</h4><button class="btn sm" data-cp="upgraded_text">⧉ Sao chép</button></div><div class="textbox">'+esc(d.upgraded_text)+'</div><div class="hint">Chữ Hán: '+hanzi(d.upgraded_text||'')+' chữ.</div>';
+    var v=d.vocab_to_learn||[];
+    if(v.length)h+='<div class="sec-h" style="margin-top:18px"><h4>Từ & cấu trúc nên học</h4></div><div class="vocab">'+v.map(function(w){return '<div class="vw"><div class="zh">'+esc(w.word)+'</div><div class="py">'+esc(w.pinyin)+'</div><div class="m">'+esc(w.meaning)+'</div></div>'}).join('')+'</div>';
+  }
+  el.innerHTML=h;
+  [].forEach.call(el.querySelectorAll('mark'),function(m){m.onclick=function(){var c=$('e'+m.dataset.i);if(!c)return;c.scrollIntoView({behavior:'smooth',block:'center'});c.classList.add('flash');setTimeout(function(){c.classList.remove('flash')},1200)}});
+  [].forEach.call(el.querySelectorAll('[data-cp]'),function(b){b.onclick=function(){copy(last.data[b.dataset.cp]||'')}});
+}
+function mark(text,errs){
+  var ranges=[];
+  errs.forEach(function(e,i){
+    var o=e.original, pos=-1, from=0;
+    while(true){pos=text.indexOf(o,from);if(pos<0)break;
+      var clash=ranges.some(function(r){return pos<r.e&&pos+o.length>r.s});
+      if(!clash)break; from=pos+1}
+    if(pos>=0)ranges.push({s:pos,e:pos+o.length,i:i,t:e.type});
+  });
+  ranges.sort(function(a,b){return a.s-b.s});
+  var out='',cur=0;
+  ranges.forEach(function(r){var c=tcol(r.t);out+=esc(text.slice(cur,r.s))+'<mark data-i="'+r.i+'" style="--mc:'+c[0]+';--ml:'+c[1]+'">'+esc(text.slice(r.s,r.e))+'<sup>'+(r.i+1)+'</sup></mark>';cur=r.e});
+  return out+esc(text.slice(cur));
+}
+function feedbackText(){
+  var d=last.data,s=d.score||{},L=[];
+  L.push('NHẬN XÉT BÀI VIẾT – HSK '+last.snap.level);
+  L.push('Dạng bài: '+last.snap.task.name);
+  L.push('Điểm: '+(s.total||0)+'/100'+(d.level_estimate?' – '+d.level_estimate:''));
+  (s.criteria||[]).forEach(function(c){L.push('• '+c.name+': '+c.score+'/'+(c.max||20)+(c.comment?' – '+c.comment:''))});
+  L.push('',d.summary||'');
+  if(d.strengths&&d.strengths.length){L.push('','Điểm làm tốt:');d.strengths.forEach(function(x){L.push('✓ '+x)})}
+  var errs=(d.errors||[]).filter(function(e){return e&&e.original});
+  if(errs.length){L.push('','LỖI CẦN SỬA:');errs.forEach(function(e,i){L.push((i+1)+'. ['+e.type+'] '+e.original+' → '+e.corrected);L.push('   Vì sao sai: '+e.explain);L.push('   Cách sửa: '+e.how_to_fix);if(e.example)L.push('   Ví dụ: '+e.example)})}
+  if(d.corrected_text)L.push('','BÀI ĐÃ SỬA:',d.corrected_text);
+  var b=d.better_expressions||[];
+  if(b.length){L.push('','GỢI Ý DIỄN ĐẠT HAY HƠN:');b.forEach(function(x){L.push('• '+x.original+' → '+x.better+' ('+x.pinyin+'): '+x.why)})}
+  if(d.upgraded_text)L.push('','BÀI NÂNG CẤP THAM KHẢO:',d.upgraded_text);
+  var v=d.vocab_to_learn||[];
+  if(v.length){L.push('','TỪ NÊN HỌC:');v.forEach(function(w){L.push('• '+w.word+' '+w.pinyin+' – '+w.meaning)})}
+  L.push('','— Guangyu Hanyu · 光余汉语');
+  return L.join('\n');
+}
+function copy(t){
+  try{navigator.clipboard.writeText(t).then(function(){toast('Đã sao chép')},function(){fallback(t)})}catch(e){fallback(t)}
+}
+function fallback(t){var b=$('cpBox');if(!b)return;b.innerHTML='<div class="hint">Thầy bôi đen và sao chép đoạn dưới đây:</div><textarea class="copyfb" readonly>'+esc(t)+'</textarea>';var ta=b.querySelector('textarea');ta.focus();ta.select()}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(function(){t.classList.remove('show')},1800)}
+
+// ---------- khởi động ----------
+syncLevel(); restore(); syncTask(); drawDrop(); drawMode();
+// ---------- kết nối Gemini ----------
+var CFGKEY='gy-cham-gemini', cfg={apiKey:'',model:'gemini-flash-latest'};
+try{var sv=JSON.parse(localStorage.getItem(CFGKEY));if(sv)for(var k in sv)cfg[k]=sv[k]}catch(e){}
+function ready(){return cfg.apiKey.length>20}
+function drawCfg(){
+  $('apiKey').value=cfg.apiKey;$('model').value=cfg.model;
+  var ok=ready();$('cfgSt').className='st '+(ok?'ok':'no');$('cfgSt').textContent=ok?'Đã kết nối':'Chưa kết nối';
+}
+$('cfgSave').onclick=function(){
+  cfg.apiKey=$('apiKey').value.trim();cfg.model=$('model').value;
+  try{localStorage.setItem(CFGKEY,JSON.stringify(cfg))}catch(e){}
+  drawCfg();if(ready()){$('cfg').open=false;toast('Đã lưu cài đặt')}else toast('API key chưa đúng');
+};
+drawCfg();if(!ready())$('cfg').open=true;
+
+function toPart(f){return new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res({inline_data:{mime_type:f.type||'image/jpeg',data:String(r.result).split(',')[1]}})};r.onerror=rej;r.readAsDataURL(f)})}
+function callClaude(prompt,imgs){
+  return Promise.all((imgs||[]).map(toPart)).then(function(parts){
+    var body={contents:[{role:'user',parts:parts.concat([{text:prompt}])}],generationConfig:{responseMimeType:'application/json',temperature:0.3,maxOutputTokens:gmode==='quick'?4000:12000}};
+    return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(cfg.model)+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':cfg.apiKey},body:JSON.stringify(body)})
+    .then(function(r){return r.text()},function(){throw {message:'Không kết nối được. Thầy kiểm tra mạng nhé.'}})
+    .then(function(t){
+      var j;try{j=JSON.parse(t)}catch(e){throw {message:'Gemini trả về dữ liệu lạ, Thầy thử lại nhé.'}}
+      if(j.error){var m=j.error.message||'',st=j.error.status||'';
+        if(/API_KEY|API key/i.test(m)||st==='PERMISSION_DENIED'||st==='UNAUTHENTICATED')m='API key không đúng. Thầy kiểm tra lại trong mục Kết nối Gemini.';
+        else if(st==='RESOURCE_EXHAUSTED'||j.error.code===429)m='Đã hết lượt miễn phí tạm thời. Thầy đợi một lát (hoặc sang ngày mai), hoặc đổi sang mô hình Flash-Lite rồi chấm lại.';
+        else if(st==='NOT_FOUND')m='Mô hình này không còn dùng được. Thầy chọn mô hình khác trong mục Kết nối Gemini.';
+        else if(st==='UNAVAILABLE'||j.error.code===503)m='Gemini đang quá tải, Thầy thử lại sau ít phút nhé.';
+        throw {message:m||'Có lỗi từ Gemini.'}}
+      var c=(j.candidates||[])[0];
+      if(!c)throw {message:'Gemini không trả kết quả (có thể bị chặn bởi bộ lọc). Thầy thử lại nhé.'};
+      var txt=((c.content||{}).parts||[]).filter(function(x){return x.text&&!x.thought}).map(function(x){return x.text}).join('');
+      var u=j.usageMetadata||{};
+      return {text:txt,truncated:c.finishReason==='MAX_TOKENS',usage:{input_tokens:u.promptTokenCount||0,output_tokens:(u.candidatesTokenCount||0)+(u.thoughtsTokenCount||0)}};
+    });
+  });
+}
+})();
+</script>
+</body>
+</html>
