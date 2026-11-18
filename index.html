@@ -414,7 +414,7 @@ $('go').onclick=function(){
   callClaude(buildPrompt(),images).then(function(r){clearInterval(tick);
     var data;
     try{data=parseJSON(r.text)}catch(e){throw {message:'Kết quả trả về chưa đúng định dạng'+(r.truncated?' (bị cắt ngắn do bài quá dài)':'')+'. Thầy bấm Chấm bài lại nhé.'}}
-    last={data:data,snap:snap,usage:r.usage};render();
+    last={data:data,snap:snap,usage:r.usage,model:r.model};render();
   }).catch(function(e){clearInterval(tick);
     var msg=(e&&e.message)||'Có lỗi xảy ra, Thầy thử lại nhé.';
     $('out').innerHTML='<div class="err-box">'+esc(msg)+'</div>';
@@ -439,7 +439,7 @@ function render(){
   var cols=['#8ea888','#a79bc8','#d39a98','#c8a679','#7fa3a6'];
   html+='<div class="crit">'+(s.criteria||[]).map(function(c,i){var mx=+c.max||20,v=+c.score||0;return '<div class="cr"><div class="h"><span>'+esc(c.name)+'</span><b>'+v+'/'+mx+'</b></div><div class="bar"><i style="width:'+(v/mx*100)+'%;background:'+cols[i%5]+'"></i></div><p>'+esc(c.comment)+'</p></div>'}).join('')+'</div>';
   html+='<div class="rtabs">'+tabs().map(function(t){return '<button data-t="'+t[0]+'" class="'+(rtab===t[0]?'on':'')+'">'+t[1]+(t[2]!=null?'<i>'+t[2]+'</i>':'')+'</button>'}).join('')+'</div><div id="rbody"></div>';
-  html+='<div class="row" style="justify-content:flex-end"><button class="btn sm" id="cpAll">⧉ Sao chép nhận xét để gửi học viên</button></div><div id="cpBox"></div><div class="usage">'+(last.snap.quick?'⚡ Chấm nhanh':'✦ Chấm đầy đủ')+(last.usage?' · Đã dùng '+last.usage.input_tokens.toLocaleString('vi-VN')+' token vào + '+last.usage.output_tokens.toLocaleString('vi-VN')+' token ra':'')+'</div>';
+  html+='<div class="row" style="justify-content:flex-end"><button class="btn sm" id="cpAll">⧉ Sao chép nhận xét để gửi học viên</button></div><div id="cpBox"></div><div class="usage">'+(last.snap.quick?'⚡ Chấm nhanh':'✦ Chấm đầy đủ')+(last.model?' · '+last.model:'')+(last.usage?' · Đã dùng '+last.usage.input_tokens.toLocaleString('vi-VN')+' token vào + '+last.usage.output_tokens.toLocaleString('vi-VN')+' token ra':'')+'</div>';
   $('out').innerHTML=html;
   [].forEach.call($('out').querySelectorAll('.rtabs button'),function(b){b.onclick=function(){rtab=b.dataset.t;render()}});
   $('cpAll').onclick=function(){copy(feedbackText())};
@@ -528,22 +528,36 @@ function toPart(f){return new Promise(function(res,rej){var r=new FileReader();r
 function callClaude(prompt,imgs){
   return Promise.all((imgs||[]).map(toPart)).then(function(parts){
     var body={contents:[{role:'user',parts:parts.concat([{text:prompt}])}],generationConfig:{responseMimeType:'application/json',temperature:0.3,maxOutputTokens:gmode==='quick'?4000:12000}};
-    return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(cfg.model)+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':cfg.apiKey},body:JSON.stringify(body)})
+    var chain=[cfg.model].concat(['gemini-flash-latest','gemini-2.5-flash','gemini-flash-lite-latest'].filter(function(m){return m!==cfg.model}));
+    var attempt=0;
+    function run(){
+      var model=chain[Math.min(Math.floor(attempt/2),chain.length-1)];
+      var el=$('prog');if(el&&attempt>0)el.textContent='Gemini đang bận, đang thử lại lần '+attempt+' với '+model+'…';
+      return once(model).catch(function(e){
+        if(e&&e.retry&&attempt<chain.length*2-1){attempt++;return new Promise(function(r){setTimeout(r,attempt%2?2500:1000)}).then(run)}
+        if(e&&e.retry)throw {message:'Gemini đang quá tải, Thầy thử lại sau ít phút nhé.'};
+        throw e;
+      });
+    }
+    function once(model){
+    return fetch('https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent',{method:'POST',headers:{'content-type':'application/json','x-goog-api-key':cfg.apiKey},body:JSON.stringify(body)})
     .then(function(r){return r.text()},function(){throw {message:'Không kết nối được. Thầy kiểm tra mạng nhé.'}})
     .then(function(t){
-      var j;try{j=JSON.parse(t)}catch(e){throw {message:'Gemini trả về dữ liệu lạ, Thầy thử lại nhé.'}}
+      var j;try{j=JSON.parse(t)}catch(e){throw {retry:true}}
       if(j.error){var m=j.error.message||'',st=j.error.status||'';
         if(/API_KEY|API key/i.test(m)||st==='PERMISSION_DENIED'||st==='UNAUTHENTICATED')m='API key không đúng. Thầy kiểm tra lại trong mục Kết nối Gemini.';
         else if(st==='RESOURCE_EXHAUSTED'||j.error.code===429)m='Đã hết lượt miễn phí tạm thời. Thầy đợi một lát (hoặc sang ngày mai), hoặc đổi sang mô hình Flash-Lite rồi chấm lại.';
         else if(st==='NOT_FOUND')m='Mô hình này không còn dùng được. Thầy chọn mô hình khác trong mục Kết nối Gemini.';
-        else if(st==='UNAVAILABLE'||j.error.code===503)m='Gemini đang quá tải, Thầy thử lại sau ít phút nhé.';
+        else if(st==='UNAVAILABLE'||st==='INTERNAL'||j.error.code===503||j.error.code===500)throw {retry:true};
         throw {message:m||'Có lỗi từ Gemini.'}}
       var c=(j.candidates||[])[0];
       if(!c)throw {message:'Gemini không trả kết quả (có thể bị chặn bởi bộ lọc). Thầy thử lại nhé.'};
       var txt=((c.content||{}).parts||[]).filter(function(x){return x.text&&!x.thought}).map(function(x){return x.text}).join('');
       var u=j.usageMetadata||{};
-      return {text:txt,truncated:c.finishReason==='MAX_TOKENS',usage:{input_tokens:u.promptTokenCount||0,output_tokens:(u.candidatesTokenCount||0)+(u.thoughtsTokenCount||0)}};
+      return {text:txt,truncated:c.finishReason==='MAX_TOKENS',model:model,usage:{input_tokens:u.promptTokenCount||0,output_tokens:(u.candidatesTokenCount||0)+(u.thoughtsTokenCount||0)}};
     });
+    }
+    return run();
   });
 }
 })();
