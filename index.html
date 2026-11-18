@@ -197,11 +197,8 @@ footer{text-align:center;font-size:11.5px;color:var(--muted);margin-top:20px}
             <input type="text" id="apiKey" placeholder="AIza…" autocomplete="off" style="-webkit-text-security:disc">
             <div class="hint">Lấy miễn phí tại aistudio.google.com → Get API key, chỉ cần tài khoản Google. Khóa chỉ lưu trong trình duyệt này.</div>
             <label class="l" for="model">Mô hình</label>
-            <select id="model">
-              <option value="gemini-flash-latest">Gemini Flash · chấm tốt (khuyên dùng)</option>
-              <option value="gemini-flash-lite-latest">Gemini Flash-Lite · nhanh, nhiều lượt hơn</option>
-              <option value="gemini-2.5-flash">Gemini 2.5 Flash · dự phòng</option>
-            </select>
+            <select id="model"><option value="">Bấm "Lưu cài đặt" để tải danh sách mô hình</option></select>
+            <div class="hint" id="modelNote"></div>
             <div class="row" style="margin-top:12px"><button class="btn sm" id="cfgSave">Lưu cài đặt</button></div>
           </div>
         </details>
@@ -407,6 +404,7 @@ $('go').onclick=function(){
   var essay=$('essay').value.trim();
   if(!essay&&!images.length){toast('Thầy dán bài viết vào trước nhé');$('essay').focus();return}
   if(!ready()){$('cfg').open=true;toast('Thầy dán Gemini API key trước nhé');return}
+  if(!cfg.models.length){toast('Đang tải danh sách mô hình…');loadModels().then(function(){try{localStorage.setItem(CFGKEY,JSON.stringify(cfg))}catch(e){}drawCfg();$('go').click()},function(e){$('cfg').open=true;toast('Key chưa dùng được: '+(e.message||''))});return}
   busy=true;$('go').disabled=true;$('go').textContent='Đang chấm…';
   $('out').innerHTML='<div class="loading"><div class="spin"></div><div style="font-family:Lora,serif;font-size:16px;color:var(--ink)">Đang đọc và chấm bài…</div><div id="prog" style="font-size:12.5px;margin-top:6px">Bài dài có thể mất 30–60 giây</div></div>';
   var snap={essay:essay,level:level,task:task(),quick:gmode==='quick'};
@@ -510,17 +508,41 @@ function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clear
 // ---------- khởi động ----------
 syncLevel(); restore(); syncTask(); drawDrop(); drawMode();
 // ---------- kết nối Gemini ----------
-var CFGKEY='gy-cham-gemini', cfg={apiKey:'',model:'gemini-flash-latest'};
+var CFGKEY='gy-cham-gemini', cfg={apiKey:'',model:'',models:[]};
 try{var sv=JSON.parse(localStorage.getItem(CFGKEY));if(sv)for(var k in sv)cfg[k]=sv[k]}catch(e){}
 function ready(){return cfg.apiKey.length>20}
+function label(m){return m.replace(/^models\//,'')}
+function drawModels(){
+  if(!cfg.models.length)return;
+  $('model').innerHTML=cfg.models.map(function(m,i){return '<option value="'+m+'">'+label(m)+(i===0?' · khuyên dùng':'')+'</option>'}).join('');
+  if(cfg.models.indexOf(cfg.model)<0)cfg.model=cfg.models[0];
+  $('modelNote').textContent='Tài khoản của Thầy dùng được '+cfg.models.length+' mô hình. Nếu một mô hình lỗi, trang tự chuyển sang mô hình kế tiếp.';
+}
+function rank(n){var v=(n.match(/gemini-(\d+(?:\.\d+)?)/)||[0,0])[1]*1, lite=/lite/.test(n)?1:0, pre=/preview|exp/.test(n)?1:0, latest=/latest/.test(n)?1:0;return [lite,pre,-v,latest]}
+function cmp(a,b){var x=rank(a),y=rank(b);for(var i=0;i<x.length;i++){if(x[i]!==y[i])return x[i]-y[i]}return a<b?-1:1}
+function loadModels(){
+  return fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=200',{headers:{'x-goog-api-key':cfg.apiKey}}).then(function(r){return r.json()}).then(function(j){
+    if(j.error)throw {message:j.error.message||'Không tải được danh sách mô hình'};
+    var list=(j.models||[]).filter(function(m){var n=m.name||'';return /gemini/.test(n)&&/flash/.test(n)&&(m.supportedGenerationMethods||[]).indexOf('generateContent')>=0&&!/tts|image|audio|live|embed|computer|vision|thinking|robotics|transcribe|native/.test(n)})
+      .map(function(m){return m.name.replace(/^models\//,'')});
+    list.sort(cmp);
+    if(!list.length)throw {message:'Không tìm thấy mô hình Flash nào cho key này'};
+    cfg.models=list.slice(0,6);
+  });
+}
 function drawCfg(){
-  $('apiKey').value=cfg.apiKey;$('model').value=cfg.model;
+  drawModels();
+  $('apiKey').value=cfg.apiKey;if(cfg.model)$('model').value=cfg.model;
   var ok=ready();$('cfgSt').className='st '+(ok?'ok':'no');$('cfgSt').textContent=ok?'Đã kết nối':'Chưa kết nối';
 }
 $('cfgSave').onclick=function(){
-  cfg.apiKey=$('apiKey').value.trim();cfg.model=$('model').value;
-  try{localStorage.setItem(CFGKEY,JSON.stringify(cfg))}catch(e){}
-  drawCfg();if(ready()){$('cfg').open=false;toast('Đã lưu cài đặt')}else toast('API key chưa đúng');
+  var newKey=$('apiKey').value.trim(), keyChanged=newKey!==cfg.apiKey;
+  cfg.apiKey=newKey; if($('model').value)cfg.model=$('model').value;
+  if(!ready()){toast('API key chưa đúng');return}
+  var done=function(){try{localStorage.setItem(CFGKEY,JSON.stringify(cfg))}catch(e){}drawCfg();$('cfg').open=false;toast('Đã lưu cài đặt')};
+  if(keyChanged||!cfg.models.length){$('modelNote').textContent='Đang kiểm tra key và tải danh sách mô hình…';
+    loadModels().then(function(){if(keyChanged)cfg.model='';done()},function(e){$('modelNote').textContent='';toast('Key chưa dùng được: '+(e.message||''))});
+  }else done();
 };
 drawCfg();if(!ready())$('cfg').open=true;
 
@@ -528,12 +550,15 @@ function toPart(f){return new Promise(function(res,rej){var r=new FileReader();r
 function callClaude(prompt,imgs){
   return Promise.all((imgs||[]).map(toPart)).then(function(parts){
     var body={contents:[{role:'user',parts:parts.concat([{text:prompt}])}],generationConfig:{responseMimeType:'application/json',temperature:0.3,maxOutputTokens:gmode==='quick'?4000:12000}};
-    var chain=[cfg.model].concat(['gemini-flash-latest','gemini-2.5-flash','gemini-flash-lite-latest'].filter(function(m){return m!==cfg.model}));
+    var pool=cfg.models.length?cfg.models:['gemini-flash-latest','gemini-flash-lite-latest'];
+    var chain=[cfg.model||pool[0]].concat(pool.filter(function(m){return m!==cfg.model}));
     var attempt=0;
     function run(){
       var model=chain[Math.min(Math.floor(attempt/2),chain.length-1)];
       var el=$('prog');if(el&&attempt>0)el.textContent='Gemini đang bận, đang thử lại lần '+attempt+' với '+model+'…';
       return once(model).catch(function(e){
+        if(e&&e.skip&&Math.floor(attempt/2)<chain.length-1){attempt=(Math.floor(attempt/2)+1)*2;var el2=$('prog');if(el2)el2.textContent=(e.quota?'Mô hình này hết lượt':'Mô hình này không dùng được')+', đang chuyển sang mô hình khác…';return run()}
+        if(e&&e.skip)throw {message:e.quota?'Đã hết lượt miễn phí của tất cả mô hình. Thầy đợi một lát hoặc sang ngày mai rồi chấm lại nhé.':'Không mô hình nào dùng được. Thầy mở Kết nối Gemini, bấm Lưu cài đặt để tải lại danh sách mô hình.'};
         if(e&&e.retry&&attempt<chain.length*2-1){attempt++;return new Promise(function(r){setTimeout(r,attempt%2?2500:1000)}).then(run)}
         if(e&&e.retry)throw {message:'Gemini đang quá tải, Thầy thử lại sau ít phút nhé.'};
         throw e;
@@ -546,8 +571,8 @@ function callClaude(prompt,imgs){
       var j;try{j=JSON.parse(t)}catch(e){throw {retry:true}}
       if(j.error){var m=j.error.message||'',st=j.error.status||'';
         if(/API_KEY|API key/i.test(m)||st==='PERMISSION_DENIED'||st==='UNAUTHENTICATED')m='API key không đúng. Thầy kiểm tra lại trong mục Kết nối Gemini.';
-        else if(st==='RESOURCE_EXHAUSTED'||j.error.code===429)m='Đã hết lượt miễn phí tạm thời. Thầy đợi một lát (hoặc sang ngày mai), hoặc đổi sang mô hình Flash-Lite rồi chấm lại.';
-        else if(st==='NOT_FOUND')m='Mô hình này không còn dùng được. Thầy chọn mô hình khác trong mục Kết nối Gemini.';
+        else if(st==='RESOURCE_EXHAUSTED'||j.error.code===429)throw {skip:true,quota:true};
+        else if(st==='NOT_FOUND'||j.error.code===404||(st==='INVALID_ARGUMENT'&&/model/i.test(m)))throw {skip:true};
         else if(st==='UNAVAILABLE'||st==='INTERNAL'||j.error.code===503||j.error.code===500)throw {retry:true};
         throw {message:m||'Có lỗi từ Gemini.'}}
       var c=(j.candidates||[])[0];
